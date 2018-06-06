@@ -1,27 +1,15 @@
 #!/usr/bin/env bash
 
-#   Copyright 2014 Steve Francia
-#
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-
 ############################  SETUP PARAMETERS
-app_name='spf13-vim'
-[ -z "$APP_PATH" ] && APP_PATH="$HOME/.spf13-vim-3"
-[ -z "$REPO_URI" ] && REPO_URI='https://github.com/spf13/spf13-vim.git'
+app_name='vim_dotfiles'
+[ -z "$APP_PATH" ] && APP_PATH="$HOME/vim_dotfiles"
+[ -z "$REPO_URI" ] && REPO_URI='https://github.com/welkinspring/vim_dotfiles.git'
 [ -z "$REPO_BRANCH" ] && REPO_BRANCH='3.0'
-debug_mode='0'
-fork_maintainer='0'
-[ -z "$VUNDLE_URI" ] && VUNDLE_URI="https://github.com/gmarik/vundle.git"
+debug_mode='1'
+
+# this is vim plugins manager tool which is tiny and agile
+[ -z "$PLUG_URL" ] && PLUG_URL="https://raw.githubusercontent.com/welkinspring/vim-plug/master/plug.vim"
+
 
 ############################  BASIC SETUP TOOLS
 msg() {
@@ -121,10 +109,10 @@ create_symlinks() {
     local source_path="$1"
     local target_path="$2"
 
-    lnif "$source_path/.vimrc"         "$target_path/.vimrc"
-    lnif "$source_path/.vimrc.bundles" "$target_path/.vimrc.bundles"
-    lnif "$source_path/.vimrc.before"  "$target_path/.vimrc.before"
-    lnif "$source_path/.vim"           "$target_path/.vim"
+    lnif "$source_path/.vimrc" 		"$target_path/.vimrc"
+    lnif "$source_path/.vimrc.plugs" 	"$target_path/.vimrc.plugs"
+    lnif "$source_path/.vimrc.before" 	"$target_path/.vimrc.before"
+    #lnif "$source_path/.vim"           "$target_path/.vim"
 
     if program_exists "nvim"; then
         lnif "$source_path/.vim"       "$target_path/.config/nvim"
@@ -138,39 +126,31 @@ create_symlinks() {
     debug
 }
 
-setup_fork_mode() {
-    local source_path="$2"
-    local target_path="$3"
-
-    if [ "$1" -eq '1' ]; then
-        touch "$target_path/.vimrc.fork"
-        touch "$target_path/.vimrc.bundles.fork"
-        touch "$target_path/.vimrc.before.fork"
-
-        lnif "$source_path/.vimrc.fork"         "$target_path/.vimrc.fork"
-        lnif "$source_path/.vimrc.bundles.fork" "$target_path/.vimrc.bundles.fork"
-        lnif "$source_path/.vimrc.before.fork"  "$target_path/.vimrc.before.fork"
-
-        ret="$?"
-        success "Created fork maintainer files."
-        debug
-    fi
+install_plug() {
+    local plug_path="$1"
+    local plug_uri="$2"
+    local plug_name="$3"
+ 
+    curl -fLo "$plug_path" --create-dirs "$plug_uri"
+    success "Successfully installed $plug_name for vim manager plugins"
+    debug
 }
 
-setup_vundle() {
+setup_vim_plug() {
     local system_shell="$SHELL"
     export SHELL='/bin/sh'
 
+    # TBD
     vim \
         -u "$1" \
         "+set nomore" \
-        "+BundleInstall!" \
-        "+BundleClean" \
+        "+PlugClean" \
+        "+PlugInstall" \
         "+qall"
 
     export SHELL="$system_shell"
 
-    success "Now updating/installing plugins using Vundle"
+    success "Now updating/installing plugins using vim-plug !"
     debug
 }
 
@@ -178,6 +158,7 @@ setup_vundle() {
 variable_set "$HOME"
 program_must_exist "vim"
 program_must_exist "git"
+program_must_exist "curl"
 
 do_backup       "$HOME/.vim" \
                 "$HOME/.vimrc" \
@@ -191,16 +172,11 @@ sync_repo       "$APP_PATH" \
 create_symlinks "$APP_PATH" \
                 "$HOME"
 
-setup_fork_mode "$fork_maintainer" \
-                "$APP_PATH" \
-                "$HOME"
+install_plug 	"$HOME/.vim/autoload" \
+                "$PLUG_URL" \
+                "vim-plug"
 
-sync_repo       "$HOME/.vim/bundle/vundle" \
-                "$VUNDLE_URI" \
-                "master" \
-                "vundle"
-
-setup_vundle    "$APP_PATH/.vimrc.bundles.default"
+setup_vim_plug 	"$APP_PATH/.vimrc.plugs.default"
 
 msg             "\nThanks for installing $app_name."
-msg             "© `date +%Y` http://vim.spf13.com/"
+msg             "© `date +%Y` https://github.com/welkinspring/vim_dotfiles"
