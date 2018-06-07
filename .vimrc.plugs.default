@@ -8,7 +8,7 @@
 
     " Use vim-plugs config {
         if filereadable(expand("~/.vimrc.plugs"))
-            source ~/.vimrc.bundles
+            source ~/.vimrc.plugs
         endif
     " }
 " }
