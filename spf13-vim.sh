@@ -127,7 +127,7 @@ install_plug() {
     local plug_uri="$2"
     local plug_name="$3"
  
-    curl -fLo "$plug_path" --create-dirs "$plug_uri"
+    curl -fLo "$plug_path/plug.vim" --create-dirs "$plug_uri"
     success "Successfully installed $plug_name for vim manager plugins"
     debug
 }
