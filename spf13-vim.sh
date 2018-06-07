@@ -68,6 +68,7 @@ lnif() {
     debug
 }
 
+
 ############################ SETUP FUNCTIONS
 
 do_backup() {
@@ -114,11 +115,6 @@ create_symlinks() {
     lnif "$source_path/.vimrc.before" 	"$target_path/.vimrc.before"
     #lnif "$source_path/.vim"           "$target_path/.vim"
 
-    if program_exists "nvim"; then
-        lnif "$source_path/.vim"       "$target_path/.config/nvim"
-        lnif "$source_path/.vimrc"     "$target_path/.config/nvim/init.vim"
-    fi
-
     touch  "$target_path/.vimrc.local"
 
     ret="$?"
@@ -162,7 +158,6 @@ program_must_exist "curl"
 
 do_backup       "$HOME/.vim" \
                 "$HOME/.vimrc" \
-                "$HOME/.gvimrc"
 
 sync_repo       "$APP_PATH" \
                 "$REPO_URI" \

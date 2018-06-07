@@ -17,8 +17,6 @@
 let g:spf13_plug_groups=['smartcomplete', 'python', 'php', 'javascript', 'html','airline']
 
 
-
-
 There is an additional tier of customization available to those who want to maintain a
 fork of spf13-vim specialized for a particular group. These users can create `.vimrc.fork`
 and `.vimrc.bundles.fork` files in the root of their fork.  The load order for the configuration is:
